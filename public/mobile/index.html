@@ -1,0 +1,26 @@
+<html>
+
+<head>
+  <title>Speech Client</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+</head>
+
+<body>
+  <div class="container">
+    <div>Select your role:</div>
+    <div><label><input type="radio" name="speaker" id="speaker-agent" checked /> Agent</label></div>
+    <div><label><input type="radio" name="speaker" id="speaker-customer" /> Customer</label></div>
+  </div>
+  <div class="container">
+    <button id="start">Start Speech Recognition</button>
+    <button id="end">End Speech Recognition</button>
+  </div>
+  <div class="container">
+    <button id="xfer">Transfer Call</button>
+  </div>
+  <script src="/js/microsoft.cognitiveservices.speech.sdk.bundle.js"></script>
+  <script src="/js/speech.js"></script>
+</body>
+
+</html>
