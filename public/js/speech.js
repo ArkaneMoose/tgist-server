@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const customerRadio = document.getElementById('speaker-customer');
     const socket = new WebSocket(SOCKET_ENDPOINT);
     let authorizationToken, serviceRegion;
-    let speechConfig, audioConfig, recognizer, speaker;
+    let speechConfig, audioConfig, recognizer, speaker, recognizing;
 
     const getSpeaker = () => {
         if (agentRadio.checked) return 'agent';
@@ -21,6 +21,42 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.add('speech-in-progress');
         document.body.classList.remove('speech-ready');
 
+        if (recognizer) {
+            recognizer.close();
+        }
+        recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+
+        // The event recognizing signals that an intermediate recognition result is received.
+        // You will receive one or more recognizing events as a speech phrase is recognized, with each containing
+        // more recognized speech. The event will contain the text for the recognition since the last phrase was recognized.
+        recognizer.recognizing = (s, e) => {
+            recognizing = true;
+            socket.send(JSON.stringify({
+                type: 'recognizing',
+                speaker: speaker,
+                result: e.result.text || '',
+            }));
+        };
+        // The event recognized signals that a final recognition result is received.
+        // This is the final event that a phrase has been recognized.
+        // For continuous recognition, you will get one recognized event for each phrase recognized.
+        recognizer.recognized = (s, e) => {
+            if (!recognizing && !e.result.text) {
+                return;
+            }
+            recognizing = false;
+            socket.send(JSON.stringify({
+                type: 'recognized',
+                speaker: speaker,
+                result: e.result.text || '',
+            }));
+        };
+        // Signals the end of a session with the speech service.
+        recognizer.sessionStopped = (s, e) => {
+            document.body.classList.add('speech-ready');
+            document.body.classList.remove('speech-in-progress');
+        };
+
         recognizer.startContinuousRecognitionAsync(
             () => {},
             err => {
@@ -29,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.body.classList.remove('speech-in-progress');
             }
         );
+        recognizing = false;
     });
 
     endBtn.addEventListener('contextmenu', e => {
@@ -59,36 +96,5 @@ document.addEventListener('DOMContentLoaded', function () {
         speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(authorizationToken, serviceRegion);
         speechConfig.speechRecognitionLanguage = 'en-US';
         audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-        recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
-
-        recognizer.sessionStarted = (s, e) => {
-            console.log('started');
-        };
-        // The event recognizing signals that an intermediate recognition result is received.
-        // You will receive one or more recognizing events as a speech phrase is recognized, with each containing
-        // more recognized speech. The event will contain the text for the recognition since the last phrase was recognized.
-        recognizer.recognizing = (s, e) => {
-            socket.send(JSON.stringify({
-                type: 'recognizing',
-                speaker: speaker,
-                result: e.result.text || '',
-            }));
-        };
-        // The event recognized signals that a final recognition result is received.
-        // This is the final event that a phrase has been recognized.
-        // For continuous recognition, you will get one recognized event for each phrase recognized.
-        recognizer.recognized = (s, e) => {
-            socket.send(JSON.stringify({
-                type: 'recognized',
-                speaker: speaker,
-                result: e.result.text || '',
-            }));
-        };
-        // Signals the end of a session with the speech service.
-        recognizer.sessionStopped = (s, e) => {
-            console.log('stopped');
-            document.body.classList.add('speech-ready');
-            document.body.classList.remove('speech-in-progress');
-        };
     });
 });
