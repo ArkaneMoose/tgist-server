@@ -1,0 +1,42 @@
+body {
+  padding: 50px;
+  font: 1.5em "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.container {
+  margin-bottom: 1em;
+}
+
+button {
+  padding: 0.5em;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#start, #end {
+  display: none;
+}
+
+.speech-ready #start {
+  display: initial;
+}
+
+.speech-in-progress {
+  background-color: black;
+}
+
+.speech-in-progress .container * {
+  display: none;
+}
+
+.speech-in-progress #end {
+  display: initial;
+}
