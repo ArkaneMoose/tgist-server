@@ -1,5 +1,5 @@
 const AUTHORIZATION_ENDPOINT = '/api/speechtoken';
-const SOCKET_ENDPOINT = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/speech`;
+const SOCKET_ENDPOINT = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/speech/send`;
 
 document.addEventListener('DOMContentLoaded', function () {
     const startBtn = document.getElementById('start');

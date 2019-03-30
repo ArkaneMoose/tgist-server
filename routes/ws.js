@@ -2,19 +2,20 @@ const express = require('express');
 const router = express.Router();
 
 const channels = {
-    speech: new Set(),
+    speech: [],
 };
 
-router.ws('/speech', (ws, req) => {
-    channels.speech.add(ws);
-    ws.on('message', msg => {
-        Array.from(channels.speech)
-            .filter(that => that !== ws)
-            .forEach(ws => ws.send(msg));
-    });
-    ws.on('close', () => {
-        channels.speech.delete(ws)
-    });
+router.ws('/speech/send', (ws, req) => {
+    ws.on('message', msg =>
+        channels.speech.forEach(ws => ws.send(msg))
+    );
+});
+
+router.ws('/speech/recv', (ws, req) => {
+    channels.speech.push(ws);
+    ws.on('close', () =>
+        channels.speech = channels.speech.filter(that => that !== ws)
+    );
 });
 
 module.exports = router;
