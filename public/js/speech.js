@@ -1,12 +1,12 @@
-const AUTHORIZATION_ENDPOINT = '/api/speechtoken';
-const SOCKET_ENDPOINT = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/speech/send`;
+const SPEECH_AUTHORIZATION_ENDPOINT = '/api/speechtoken';
+const SPEECH_SOCKET_ENDPOINT = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/speech/send`;
 
 document.addEventListener('DOMContentLoaded', function () {
     const startBtn = document.getElementById('start');
     const endBtn = document.getElementById('end');
     const agentRadio = document.getElementById('speaker-agent');
     const customerRadio = document.getElementById('speaker-customer');
-    const socket = new WebSocket(SOCKET_ENDPOINT);
+    const socket = new WebSocket(SPEECH_SOCKET_ENDPOINT);
     let authorizationToken, serviceRegion;
     let speechConfig, audioConfig, recognizer, speaker, recognizing;
 
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     Promise.all([
-        fetch(AUTHORIZATION_ENDPOINT).then(res => res.text()).then(text => {
+        fetch(SPEECH_AUTHORIZATION_ENDPOINT).then(res => res.text()).then(text => {
             authorizationToken = text;
             serviceRegion = JSON.parse(atob(authorizationToken.split('.')[1])).region;
         }),

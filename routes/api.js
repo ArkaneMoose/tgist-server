@@ -5,6 +5,7 @@ const router = express.Router();
 
 const SPEECH_SUBSCRIPTION_KEY = '***REMOVED***';
 const SPEECH_TOKEN_ENDPOINT = 'https://eastus.api.cognitive.microsoft.com/sts/v1.0/issuetoken';
+const ANALYTICS_SUBSCRIPTION_KEY = '***REMOVED***';
 
 router.get('/version', (req, res, next) => {
   res.send({ 'version': package.version });
@@ -17,6 +18,10 @@ router.get('/speechtoken', (req, res, next) => {
     body: {},
     headers: { 'Ocp-Apim-Subscription-Key': SPEECH_SUBSCRIPTION_KEY },
   }).pipe(res);
+});
+
+router.get('/analyticskey', (req, res, next) => {
+  res.send(ANALYTICS_SUBSCRIPTION_KEY);
 });
 
 module.exports = router;
