@@ -1,12 +1,13 @@
 const SPEECH_AUTHORIZATION_ENDPOINT = '/api/speechtoken';
-const SPEECH_SOCKET_ENDPOINT = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/speech/send`;
+const SPEECH_SEND_SOCKET_ENDPOINT = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/ws/speech/send`;
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     const startBtn = document.getElementById('start');
     const endBtn = document.getElementById('end');
+    const xferBtn = document.getElementById('xfer');
     const agentRadio = document.getElementById('speaker-agent');
     const customerRadio = document.getElementById('speaker-customer');
-    const socket = new WebSocket(SPEECH_SOCKET_ENDPOINT);
+    const socket = new WebSocket(SPEECH_SEND_SOCKET_ENDPOINT);
     let authorizationToken, serviceRegion;
     let speechConfig, audioConfig, recognizer, speaker, recognizing;
 
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         recognizing = false;
     });
 
-    endBtn.addEventListener('contextmenu', e => {
+    endBtn.addEventListener('click', e => {
         recognizer.stopContinuousRecognitionAsync(
             () => {
                 document.body.classList.add('speech-ready');
@@ -82,6 +83,10 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         return false;
     });
+
+    xferBtn.addEventListener('click', e => {
+        socket.send(JSON.stringify({ type: 'transfer' }));
+    })
 
     Promise.all([
         fetch(SPEECH_AUTHORIZATION_ENDPOINT).then(res => res.text()).then(text => {
