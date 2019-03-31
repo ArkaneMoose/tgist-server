@@ -3,9 +3,8 @@ const request = require('request');
 const package = require('../package.json');
 const router = express.Router();
 
-const SPEECH_SUBSCRIPTION_KEY = '***REMOVED***';
+const { SPEECH_SUBSCRIPTION_KEY, ANALYTICS_SUBSCRIPTION_KEY } = require('../apikeys');
 const SPEECH_TOKEN_ENDPOINT = 'https://eastus.api.cognitive.microsoft.com/sts/v1.0/issuetoken';
-const ANALYTICS_SUBSCRIPTION_KEY = '***REMOVED***';
 
 router.get('/version', (req, res, next) => {
   res.send({ 'version': package.version });
